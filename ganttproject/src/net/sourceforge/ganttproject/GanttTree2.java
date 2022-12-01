@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sourceforge.ganttproject.action.GPAction;
-import net.sourceforge.ganttproject.action.project.NewProjectAction;
 import net.sourceforge.ganttproject.action.task.*;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.VisibleNodesFilter;
@@ -93,12 +92,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private final GPAction myUnlinkTasksAction;
 
-  private final Action[] myFilterActions;
-
-  private static final int N_ACTIONS = 2;
-  private final GPAction myFinishedFilterAction;
-
-  private final GPAction myNoFilterAction;
+  private final GPAction myFilterAction;
 
   private boolean isOnTaskSelectionEventProcessing;
 
@@ -175,12 +169,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     myUnindentAction = new TaskUnindentAction(taskManager, selectionManager, uiFacade, this);
     myMoveUpAction = new TaskMoveUpAction(taskManager, selectionManager, uiFacade, this);
     myMoveDownAction = new TaskMoveDownAction(taskManager, selectionManager, uiFacade, this);
-    myFilterActions = new Action[N_ACTIONS];
-    myNoFilterAction = new TaskNoFilterAction(taskManager, selectionManager, uiFacade);
-    myFinishedFilterAction = new TaskFinishedFilterAction(taskManager, selectionManager, uiFacade);
-    myFilterActions[0] = myNoFilterAction;
-    myFilterActions[1] = myFinishedFilterAction;
-    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myFinishedFilterAction, newAction,
+    myFilterAction = new TaskFilterAction(taskManager, selectionManager, uiFacade);
+    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myFilterAction, newAction,
         myProject.getCutAction(), myProject.getCopyAction(), myProject.getPasteAction(), propertiesAction, deleteAction);
   }
 
@@ -563,7 +553,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     builder.addButton(myUnindentAction.asToolbarAction()).addButton(myIndentAction.asToolbarAction())
         .addButton(myMoveUpAction.asToolbarAction()).addButton(myMoveDownAction.asToolbarAction())
         .addButton(myLinkTasksAction.asToolbarAction()).addButton(myUnlinkTasksAction.asToolbarAction())
-            .addComboBox(myFilterActions, myNoFilterAction.asToolbarAction());
+            .addButton(myFilterAction.asToolbarAction());
   }
 
   @Override
