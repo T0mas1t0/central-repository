@@ -200,7 +200,7 @@ public class ToolbarBuilder {
             onMouseClicked(e);
           }
         });
-        setIcon(new ImageIcon(getClass().getResource("/icons/dropdown_16.png")) {
+        setIcon(new ImageIcon(getClass().getResource("/icons/filter_16.png")) {
           @Override
           public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
             super.paintIcon(c, g, x, y);

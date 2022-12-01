@@ -63,6 +63,7 @@ public class TaskMoveUpAction extends TaskActionBase {
 
   @Override
   protected void run(List<Task> selection) throws Exception {
+    getTree().hide();
     getTree().commitIfEditing();
     final TaskContainmentHierarchyFacade taskHierarchy = getTaskManager().getTaskHierarchy();
     for (Task task : selection) {

@@ -118,6 +118,8 @@ public class TaskImpl implements Task {
 
   private Color myColor;
 
+  private boolean myVisible;
+
   private String myNotes;
 
   private MutatorImpl myMutator;
@@ -153,6 +155,7 @@ public class TaskImpl implements Task {
     myNotes = "";
     bExpand = true;
     myColor = null;
+    myVisible = true;
 
     customValues = new CustomColumnsValues(myManager.getCustomPropertyManager());
   }
@@ -183,6 +186,7 @@ public class TaskImpl implements Task {
     myLength = copy.myLength;
     myShape = copy.myShape;
     myColor = copy.myColor;
+    myVisible = copy.myVisible;
     myNotes = copy.myNotes;
     bExpand = copy.bExpand;
     myCost.setValue(copy.myCost);
@@ -843,6 +847,16 @@ public class TaskImpl implements Task {
     }
 
     @Override
+    public void setVisible(final boolean visible) {
+      myCommands.add(new Runnable() {
+        @Override
+        public void run() {
+          TaskImpl.this.setVisible(visible);
+        }
+      });
+    }
+
+    @Override
     public void setWebLink(final String webLink) {
       myCommands.add(new Runnable() {
         @Override
@@ -1131,6 +1145,11 @@ public class TaskImpl implements Task {
   @Override
   public void setColor(Color color) {
     myColor = color;
+  }
+
+  @Override
+  public void setVisible(boolean visible) {
+    myVisible = visible;
   }
 
   @Override

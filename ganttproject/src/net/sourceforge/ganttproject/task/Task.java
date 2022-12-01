@@ -167,7 +167,7 @@ public interface Task extends MutableTask {
 
   Task unpluggedClone();
 
-  CustomColumnsValues getCustomValues();
+    CustomColumnsValues getCustomValues();
 
   boolean isCritical();
 

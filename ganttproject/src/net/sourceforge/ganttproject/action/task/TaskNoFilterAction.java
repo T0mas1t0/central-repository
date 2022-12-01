@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
@@ -48,9 +49,10 @@ public class TaskNoFilterAction extends TaskActionBase {
 
     @Override
     protected void run(List<Task> selection) throws Exception {
-        //TODO FILTER ACTIONS
         for(Task t: getTaskManager().getTasks()) {
-            //TODO Show all tasks
+            t.setColor(getTaskManager().getTaskDefaultColorOption().getValue());
+            if(t.isSupertask())
+                t.setColor(Color.BLACK);
         }
     }
 

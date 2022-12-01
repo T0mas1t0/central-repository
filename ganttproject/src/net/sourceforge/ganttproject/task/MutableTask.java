@@ -53,6 +53,8 @@ public interface MutableTask {
 
   void setColor(Color color);
 
+  void setVisible(boolean visible);
+
   /** Sets the weblink for the task */
   void setWebLink(String webLink);
 

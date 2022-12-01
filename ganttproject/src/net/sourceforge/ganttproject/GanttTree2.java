@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sourceforge.ganttproject.action.GPAction;
-import net.sourceforge.ganttproject.action.project.NewProjectAction;
 import net.sourceforge.ganttproject.action.task.*;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.VisibleNodesFilter;
@@ -95,10 +94,12 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private final Action[] myFilterActions;
 
-  private static final int N_ACTIONS = 2;
+  private static final int N_ACTIONS = 3;
   private final GPAction myFinishedFilterAction;
 
   private final GPAction myNoFilterAction;
+
+  private final GPAction myMoreThanHalfFilterAction;
 
   private boolean isOnTaskSelectionEventProcessing;
 
@@ -178,9 +179,11 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     myFilterActions = new Action[N_ACTIONS];
     myNoFilterAction = new TaskNoFilterAction(taskManager, selectionManager, uiFacade);
     myFinishedFilterAction = new TaskFinishedFilterAction(taskManager, selectionManager, uiFacade);
+    myMoreThanHalfFilterAction = new TaskMoreThanHalfFilterAction(taskManager, selectionManager, uiFacade);
     myFilterActions[0] = myNoFilterAction;
     myFilterActions[1] = myFinishedFilterAction;
-    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myFinishedFilterAction, newAction,
+    myFilterActions[2] = myMoreThanHalfFilterAction;
+    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction, newAction,
         myProject.getCutAction(), myProject.getCopyAction(), myProject.getPasteAction(), propertiesAction, deleteAction);
   }
 
@@ -553,7 +556,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   public AbstractAction[] getTreeActions() {
     if (myTreeActions == null) {
       myTreeActions = new AbstractAction[] { myUnindentAction, myIndentAction, myMoveUpAction, myMoveDownAction,
-          myLinkTasksAction, myUnlinkTasksAction };
+          myLinkTasksAction, myUnlinkTasksAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction };
     }
     return myTreeActions;
   }
