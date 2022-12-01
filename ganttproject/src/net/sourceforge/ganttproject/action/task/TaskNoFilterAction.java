@@ -25,14 +25,18 @@ import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Date;
 import java.util.List;
 
-public class TaskFilterAction extends TaskActionBase {
+public class TaskNoFilterAction extends TaskActionBase {
 
-    public TaskFilterAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade) {
-        super("task.filter", taskManager, selectionManager, uiFacade, null);
+    private boolean toggle;
+
+    public TaskNoFilterAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade) {
+        super("task.noFilter", taskManager, selectionManager, uiFacade, null);
     }
 
     @Override
@@ -42,19 +46,19 @@ public class TaskFilterAction extends TaskActionBase {
 
     @Override
     protected boolean isEnabled(List<Task> selection) {
-        return (selection.size() != 0);
+        return selection.size() != 0;
     }
 
     @Override
     protected void run(List<Task> selection) throws Exception {
-        //TODO FILTER ACTIONS
-        // Update (un)link buttons
-        getSelectionManager().fireSelectionChanged();
+        for(Task t : getTaskManager().getTasks()) {
+            //TODO show tasks
+        }
     }
 
     @Override
     public GPAction asToolbarAction() {
-        final TaskFilterAction result = new TaskFilterAction(getTaskManager(), getSelectionManager(), getUIFacade());
+        final TaskNoFilterAction result = new TaskNoFilterAction(getTaskManager(), getSelectionManager(), getUIFacade());
         result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
         this.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
