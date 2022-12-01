@@ -92,6 +92,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private final GPAction myUnlinkTasksAction;
 
+  private final GPAction myFilterAction;
+
   private boolean isOnTaskSelectionEventProcessing;
 
   private Highlighter myDragHighlighter;
@@ -167,7 +169,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     myUnindentAction = new TaskUnindentAction(taskManager, selectionManager, uiFacade, this);
     myMoveUpAction = new TaskMoveUpAction(taskManager, selectionManager, uiFacade, this);
     myMoveDownAction = new TaskMoveDownAction(taskManager, selectionManager, uiFacade, this);
-    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, newAction,
+    myFilterAction = new TaskFilterAction(taskManager, selectionManager, uiFacade);
+    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myFilterAction, newAction,
         myProject.getCutAction(), myProject.getCopyAction(), myProject.getPasteAction(), propertiesAction, deleteAction);
   }
 
@@ -549,7 +552,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   public void addToolbarActions(ToolbarBuilder builder) {
     builder.addButton(myUnindentAction.asToolbarAction()).addButton(myIndentAction.asToolbarAction())
         .addButton(myMoveUpAction.asToolbarAction()).addButton(myMoveDownAction.asToolbarAction())
-        .addButton(myLinkTasksAction.asToolbarAction()).addButton(myUnlinkTasksAction.asToolbarAction());
+        .addButton(myLinkTasksAction.asToolbarAction()).addButton(myUnlinkTasksAction.asToolbarAction())
+            .addButton(myFilterAction.asToolbarAction());
   }
 
   @Override
