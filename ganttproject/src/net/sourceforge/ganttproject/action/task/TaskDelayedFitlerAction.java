@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.action.task;
 
-import net.sourceforge.ganttproject.GanttTree2;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
@@ -32,10 +31,10 @@ import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
 
-public class TaskFinishedFilterAction extends TaskActionBase {
+public class TaskDelayedFitlerAction extends TaskActionBase {
 
-    public TaskFinishedFilterAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade) {
-        super("task.finishedFilter", taskManager, selectionManager, uiFacade,null);
+    public TaskDelayedFitlerAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade) {
+        super("task.delayedFilter", taskManager, selectionManager, uiFacade, null);
     }
 
     @Override
@@ -56,15 +55,19 @@ public class TaskFinishedFilterAction extends TaskActionBase {
                 t.setColor(Color.BLACK);
         }
         for(Task t: getTaskManager().getTasks()) {
-            if(t.getCompletionPercentage() == 100) { //Finished tasks
-                t.setColor(Color.GREEN);
+            double complete = t.getCompletionPercentage()/100.0;
+            int progessDays = Math.round(complete * t.getDuration().getLength());
+            Date progressDate = t.getStart().getTime();
+            progressDate.setDate(progressDate.getDate() + progessDays);
+            if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0) { //Delayed task
+                t.setColor(Color.RED);
             }
         }
     }
 
     @Override
     public GPAction asToolbarAction() {
-        final TaskFinishedFilterAction result = new TaskFinishedFilterAction(getTaskManager(), getSelectionManager(), getUIFacade());
+        final TaskDelayedFitlerAction result = new TaskDelayedFitlerAction(getTaskManager(), getSelectionManager(), getUIFacade());
         result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
         this.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
@@ -78,3 +81,5 @@ public class TaskFinishedFilterAction extends TaskActionBase {
         return result;
     }
 }
+
+

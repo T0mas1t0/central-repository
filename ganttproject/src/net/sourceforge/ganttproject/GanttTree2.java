@@ -94,12 +94,16 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private final Action[] myFilterActions;
 
-  private static final int N_ACTIONS = 3;
+  private static final int N_ACTIONS = 5;
   private final GPAction myFinishedFilterAction;
 
   private final GPAction myNoFilterAction;
 
   private final GPAction myMoreThanHalfFilterAction;
+
+  private final GPAction myDelayedFilterAction;
+
+  private final GPAction myAlmostDeadLineFilterAction;
 
   private boolean isOnTaskSelectionEventProcessing;
 
@@ -180,11 +184,17 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     myNoFilterAction = new TaskNoFilterAction(taskManager, selectionManager, uiFacade);
     myFinishedFilterAction = new TaskFinishedFilterAction(taskManager, selectionManager, uiFacade);
     myMoreThanHalfFilterAction = new TaskMoreThanHalfFilterAction(taskManager, selectionManager, uiFacade);
+    myDelayedFilterAction = new TaskDelayedFitlerAction(taskManager, selectionManager, uiFacade);
+    myAlmostDeadLineFilterAction = new TaskAlmostDeadLineFilterAction(taskManager, selectionManager, uiFacade);
     myFilterActions[0] = myNoFilterAction;
     myFilterActions[1] = myFinishedFilterAction;
     myFilterActions[2] = myMoreThanHalfFilterAction;
-    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction, myUnindentAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction, newAction,
-        myProject.getCutAction(), myProject.getCopyAction(), myProject.getPasteAction(), propertiesAction, deleteAction);
+    myFilterActions[3] = myDelayedFilterAction;
+    myFilterActions[4] = myAlmostDeadLineFilterAction;
+    getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction,
+            myUnindentAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction, myDelayedFilterAction,
+            myAlmostDeadLineFilterAction, newAction, myProject.getCutAction(), myProject.getCopyAction(),
+            myProject.getPasteAction(), propertiesAction, deleteAction);
   }
 
   @Override

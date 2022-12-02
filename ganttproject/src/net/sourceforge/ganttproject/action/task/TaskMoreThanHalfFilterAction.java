@@ -51,16 +51,13 @@ public class TaskMoreThanHalfFilterAction extends TaskActionBase {
 
         @Override
         protected void run(List<Task> selection) throws Exception {
-            for(Task t: getTaskManager().getTasks()) {
+            for(Task t: getTaskManager().getTasks()) { //Reset Color
                 t.setColor(getTaskManager().getTaskDefaultColorOption().getValue());
                 if(t.isSupertask())
                     t.setColor(Color.BLACK);
             }
             for(Task t: getTaskManager().getTasks()) {
-                int halfDuration = t.getDuration().getLength()/2;
-                Date halfDate = t.getStart().getTime();
-                halfDate.setDate(halfDate.getDate() + halfDuration);
-                if(halfDate.before(new Date())/*|| progress == 100?*/) { //50%+
+                if(t.getCompletionPercentage() >= 50) { //50%+
                     t.setColor(Color.ORANGE);
                 }
             }
