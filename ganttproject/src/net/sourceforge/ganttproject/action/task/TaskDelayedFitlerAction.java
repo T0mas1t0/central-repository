@@ -56,10 +56,10 @@ public class TaskDelayedFitlerAction extends TaskActionBase {
         }
         for(Task t: getTaskManager().getTasks()) {
             double complete = t.getCompletionPercentage()/100.0;
-            int progessDays = Math.round(complete * t.getDuration().getLength());
+            int progressDays = (int)(complete * t.getDuration().getLength());
             Date progressDate = t.getStart().getTime();
-            progressDate.setDate(progressDate.getDate() + progessDays);
-            if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0) { //Delayed task
+            progressDate.setDate(progressDate.getDate() + progressDays);
+            if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0 && progressDate.getDay() != new Date().getDay()) { //Delayed task
                 t.setColor(Color.RED);
             }
         }
