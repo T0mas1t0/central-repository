@@ -55,6 +55,7 @@ public class TaskDelayedFitlerAction extends TaskActionBase {
             if(t.isSupertask())
                 t.setColor(Color.BLACK);
         }
+        //for commit
         for(Task t: getTaskManager().getTasks()) {
             double complete = t.getCompletionPercentage()/100.0;
             int grantProgressDays = (int)(complete * t.getDuration().getLength());
