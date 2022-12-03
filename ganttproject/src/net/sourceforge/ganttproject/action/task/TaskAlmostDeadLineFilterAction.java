@@ -56,11 +56,11 @@ public class TaskAlmostDeadLineFilterAction extends TaskActionBase {
                 t.setColor(Color.BLACK);
         }
         for(Task t: getTaskManager().getTasks()) {
-            //int idealDays = Math.round(0.1 * t.getDuration().getLength());
-            Date idealDate = t.getStart().getTime();
-            //idealDate.setDate(idealDate.getDate() + idealDays);
-            if(new Date().before(idealDate) && new Date().compareTo(t.getStart().getTime()) >= 0) { //Delayed task
-                t.setColor(Color.RED);
+            int progressDays = (int)(0.90 * t.getDuration().getLength());
+            Date progressDate = t.getStart().getTime();
+            progressDate.setDate(progressDate.getDate() + progressDays);
+            if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0 && progressDate.getDay() != new Date().getDay()) { //Delayed task
+                t.setColor(Color.PINK);
             }
         }
     }

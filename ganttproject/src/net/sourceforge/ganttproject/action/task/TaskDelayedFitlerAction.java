@@ -28,6 +28,7 @@ import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -56,9 +57,25 @@ public class TaskDelayedFitlerAction extends TaskActionBase {
         }
         for(Task t: getTaskManager().getTasks()) {
             double complete = t.getCompletionPercentage()/100.0;
-            int progressDays = (int)(complete * t.getDuration().getLength());
+            int grantProgressDays = (int)(complete * t.getDuration().getLength());
             Date progressDate = t.getStart().getTime();
-            progressDate.setDate(progressDate.getDate() + progressDays);
+            Calendar c = Calendar.getInstance();
+            System.out.println("Init progress date:" + progressDate);
+            System.out.println("Init GrantProgress days:" + grantProgressDays);
+            for(int i = 0; i < grantProgressDays; i++) {
+                c.setTime(progressDate);
+                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                System.out.println(dayOfWeek);
+                if(dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
+                    System.out.println("passei aqui fds");
+                    progressDate.setDate(progressDate.getDate() + 2);
+                }else
+                    progressDate.setDate(progressDate.getDate() + 1);
+            }
+
+            System.out.println("Progress date final: " + progressDate);
+            System.out.println("Today: " + new Date());
+
             if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0 && progressDate.getDay() != new Date().getDay()) { //Delayed task
                 t.setColor(Color.RED);
             }
