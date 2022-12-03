@@ -318,6 +318,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
       actions.add(getPropertiesAction());
       actions.add(null);
       for (AbstractAction a : getTreeActions()) {
+        if(a.equals(myNoFilterAction)) //Separate Filter in menu right click
+          actions.add(null);
         actions.add(a);
       }
       actions.add(null);

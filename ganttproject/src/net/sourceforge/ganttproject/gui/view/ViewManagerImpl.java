@@ -23,6 +23,7 @@ import net.sourceforge.ganttproject.ProjectEventListener;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.action.edit.CopyAction;
 import net.sourceforge.ganttproject.action.edit.CutAction;
+import net.sourceforge.ganttproject.action.edit.FinishedTStatsAction;
 import net.sourceforge.ganttproject.action.edit.PasteAction;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.ChartSelection;
@@ -50,6 +51,8 @@ public class ViewManagerImpl implements GPViewManager {
   private final CutAction myCutAction;
   private final PasteAction myPasteAction;
 
+  private final FinishedTStatsAction myStatsAction;
+
   public ViewManagerImpl(IGanttProject project, UIFacade uiFacade, GanttTabbedPane tabs, GPUndoManager undoManager) {
     myTabs = tabs;
     project.addProjectEventListener(getProjectEventListener());
@@ -57,6 +60,7 @@ public class ViewManagerImpl implements GPViewManager {
     myCopyAction = new CopyAction(this);
     myCutAction = new CutAction(this, undoManager);
     myPasteAction = new PasteAction(project, uiFacade, this, undoManager);
+    myStatsAction = new FinishedTStatsAction(GPAction.IconSize.MENU);
 
     myTabs.addChangeListener(new ChangeListener() {
 
@@ -91,6 +95,11 @@ public class ViewManagerImpl implements GPViewManager {
   @Override
   public GPAction getPasteAction() {
     return myPasteAction;
+  }
+
+  @Override
+  public GPAction getStatsAction() {
+    return myStatsAction;
   }
 
   @Override

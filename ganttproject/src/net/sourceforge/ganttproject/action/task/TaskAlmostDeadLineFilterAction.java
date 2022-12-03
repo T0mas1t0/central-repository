@@ -75,7 +75,8 @@ public class TaskAlmostDeadLineFilterAction extends TaskActionBase {
                 progressDate.setDate(progressDate.getDate() - 1);
             if(progressDate.before(new Date())
                     && new Date().compareTo(t.getStart().getTime()) >= 0
-                    && t.getCompletionPercentage() < 100) { //+80% to Deadline
+                    && t.getCompletionPercentage() < 100
+                    && t.getEnd().getTime().after(new Date())) { //+80% to Deadline
                 t.setColor(Color.PINK);
             }
         }

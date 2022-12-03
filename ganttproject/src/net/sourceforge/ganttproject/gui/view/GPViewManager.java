@@ -36,6 +36,8 @@ public interface GPViewManager {
 
   public GPAction getPasteAction();
 
+  public GPAction getStatsAction();
+
   public ChartSelection getSelectedArtefacts();
 
   public Chart getActiveChart();

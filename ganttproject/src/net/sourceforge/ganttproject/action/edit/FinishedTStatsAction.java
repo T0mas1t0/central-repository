@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package net.sourceforge.ganttproject.action.task;
+package net.sourceforge.ganttproject.action.edit;
 
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIUtil;
@@ -27,15 +27,14 @@ import java.awt.event.ActionEvent;
 
 public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
-    private FinishedTStatsAction(IconSize size) {
+    public FinishedTStatsAction(IconSize size) {
         super("stats", size);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (calledFromAppleScreenMenu(e)) {
-            return;
-        }
+    //TODO
+
     }
 
     @Override
