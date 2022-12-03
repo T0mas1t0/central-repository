@@ -20,7 +20,9 @@ package net.sourceforge.ganttproject.action.edit;
 
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
+import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
+import net.sourceforge.ganttproject.gui.resource.ResourceStats;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.undo.GPUndoListener;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
@@ -33,11 +35,13 @@ import  java.util.List;
 public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
     private final IGanttProject myProject;
+    private final UIFacade myUiFacade;
     private final List<ResourceAssignment> resourceAssignments = new ArrayList<>();
 
-    public FinishedTStatsAction(IGanttProject project, IconSize size) {
+    public FinishedTStatsAction(IGanttProject project, UIFacade uifacade, IconSize size) {
         super("stats", size);
         myProject = project;
+        myUiFacade = uifacade;
     }
 
     @Override
@@ -48,6 +52,8 @@ public class FinishedTStatsAction extends GPAction implements GPUndoListener {
                 System.out.println(a.getTask().getName());
             }
         }
+        ResourceStats resourceStats = new ResourceStats(myProject, myUiFacade);
+        resourceStats.show();
 
 
         System.out.println(myProject.getHumanResourceManager().getResources());
@@ -76,7 +82,7 @@ public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
     @Override
     public FinishedTStatsAction asToolbarAction() {
-        FinishedTStatsAction result = new FinishedTStatsAction(myProject, IconSize.MENU);
+        FinishedTStatsAction result = new FinishedTStatsAction(myProject, myUiFacade, IconSize.MENU);
         result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
         return result;
     }

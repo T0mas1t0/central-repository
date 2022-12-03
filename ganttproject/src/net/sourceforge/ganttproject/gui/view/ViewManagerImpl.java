@@ -60,7 +60,7 @@ public class ViewManagerImpl implements GPViewManager {
     myCopyAction = new CopyAction(this);
     myCutAction = new CutAction(this, undoManager);
     myPasteAction = new PasteAction(project, uiFacade, this, undoManager);
-    myStatsAction = new FinishedTStatsAction(GPAction.IconSize.MENU);
+    myStatsAction = new FinishedTStatsAction(project, uiFacade, GPAction.IconSize.MENU);
 
     myTabs.addChangeListener(new ChangeListener() {
 
