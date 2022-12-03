@@ -55,29 +55,28 @@ public class TaskDelayedFitlerAction extends TaskActionBase {
             if(t.isSupertask())
                 t.setColor(Color.BLACK);
         }
-        //for commit
         for(Task t: getTaskManager().getTasks()) {
             double complete = t.getCompletionPercentage()/100.0;
-            int grantProgressDays = (int)(complete * t.getDuration().getLength());
+            int ganttProgressDays = (int)(complete * t.getDuration().getLength());
             Date progressDate = t.getStart().getTime();
             Calendar c = Calendar.getInstance();
-            System.out.println("Init progress date:" + progressDate);
-            System.out.println("Init GrantProgress days:" + grantProgressDays);
-            for(int i = 0; i < grantProgressDays; i++) {
+            for(int i = 0; i < ganttProgressDays; i++) {
                 c.setTime(progressDate);
                 int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                System.out.println(dayOfWeek);
-                if(dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
-                    System.out.println("passei aqui fds");
-                    progressDate.setDate(progressDate.getDate() + 2);
-                }else
+                if(dayOfWeek == Calendar.FRIDAY)
+                    progressDate.setDate(progressDate.getDate() + 3);
+                else
                     progressDate.setDate(progressDate.getDate() + 1);
             }
-
-            System.out.println("Progress date final: " + progressDate);
-            System.out.println("Today: " + new Date());
-
-            if(progressDate.before(new Date()) && new Date().compareTo(t.getStart().getTime()) >= 0 && progressDate.getDay() != new Date().getDay()) { //Delayed task
+            c.setTime(progressDate);
+            if(c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
+                progressDate.setDate(progressDate.getDate() - 2);
+            if(c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+                progressDate.setDate(progressDate.getDate() - 1);
+            if(progressDate.before(new Date())
+                    && new Date().compareTo(t.getStart().getTime()) >= 0
+                    && t.getCompletionPercentage() < 100
+                    || new Date().compareTo(t.getEnd().getTime()) >= 0 && t.getCompletionPercentage() < 100) { //Delayed task
                 t.setColor(Color.RED);
             }
         }

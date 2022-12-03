@@ -94,7 +94,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private final Action[] myFilterActions;
 
-  private static final int N_ACTIONS = 5;
+  private static final int N_ACTIONS = 6;
   private final GPAction myFinishedFilterAction;
 
   private final GPAction myNoFilterAction;
@@ -104,6 +104,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   private final GPAction myDelayedFilterAction;
 
   private final GPAction myAlmostDeadLineFilterAction;
+
+  private final GPAction myDeadLinePassedFilterAction;
 
   private boolean isOnTaskSelectionEventProcessing;
 
@@ -186,15 +188,17 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     myMoreThanHalfFilterAction = new TaskMoreThanHalfFilterAction(taskManager, selectionManager, uiFacade);
     myDelayedFilterAction = new TaskDelayedFitlerAction(taskManager, selectionManager, uiFacade);
     myAlmostDeadLineFilterAction = new TaskAlmostDeadLineFilterAction(taskManager, selectionManager, uiFacade);
+    myDeadLinePassedFilterAction = new TaskDeadLinePassedFilterAction(taskManager, selectionManager, uiFacade);
     myFilterActions[0] = myNoFilterAction;
     myFilterActions[1] = myFinishedFilterAction;
     myFilterActions[2] = myMoreThanHalfFilterAction;
     myFilterActions[3] = myDelayedFilterAction;
     myFilterActions[4] = myAlmostDeadLineFilterAction;
+    myFilterActions[5] = myDeadLinePassedFilterAction;
     getTreeTable().setupActionMaps(myMoveUpAction, myMoveDownAction, myIndentAction,
             myUnindentAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction, myDelayedFilterAction,
-            myAlmostDeadLineFilterAction, newAction, myProject.getCutAction(), myProject.getCopyAction(),
-            myProject.getPasteAction(), propertiesAction, deleteAction);
+            myAlmostDeadLineFilterAction, myDeadLinePassedFilterAction, newAction, myProject.getCutAction(),
+            myProject.getCopyAction(), myProject.getPasteAction(), propertiesAction, deleteAction);
   }
 
   @Override
@@ -566,7 +570,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   public AbstractAction[] getTreeActions() {
     if (myTreeActions == null) {
       myTreeActions = new AbstractAction[] { myUnindentAction, myIndentAction, myMoveUpAction, myMoveDownAction,
-          myLinkTasksAction, myUnlinkTasksAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction };
+          myLinkTasksAction, myUnlinkTasksAction, myNoFilterAction, myFinishedFilterAction, myMoreThanHalfFilterAction,
+          myDelayedFilterAction, myAlmostDeadLineFilterAction, myDeadLinePassedFilterAction };
     }
     return myTreeActions;
   }
