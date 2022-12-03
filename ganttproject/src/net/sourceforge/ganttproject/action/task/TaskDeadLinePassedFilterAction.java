@@ -54,9 +54,9 @@ public class TaskDeadLinePassedFilterAction  extends TaskActionBase {
             if(t.isSupertask())
                 t.setColor(Color.BLACK);
         }
-        for(Task t: getTaskManager().getTasks()) {
+        for(Task t: getTaskManager().getTasks()) { //DeadLine Passed
             if(t.getEnd().getTime().before(new Date()))
-                t.setColor(new Color(88, 40, 9));
+                t.setColor(new Color(145, 71, 11));
         }
     }
 

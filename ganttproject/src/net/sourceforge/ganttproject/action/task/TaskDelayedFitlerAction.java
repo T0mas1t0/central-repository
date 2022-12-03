@@ -75,8 +75,7 @@ public class TaskDelayedFitlerAction extends TaskActionBase {
                 progressDate.setDate(progressDate.getDate() - 1);
             if(progressDate.before(new Date())
                     && new Date().compareTo(t.getStart().getTime()) >= 0
-                    && t.getCompletionPercentage() < 100
-                    || new Date().compareTo(t.getEnd().getTime()) >= 0 && t.getCompletionPercentage() < 100) { //Delayed task
+                    && t.getCompletionPercentage() < 100) { //Delayed task
                 t.setColor(Color.RED);
             }
         }
