@@ -29,6 +29,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.text.DecimalFormat;
 
 public class ResourceStats {
 
@@ -70,15 +71,22 @@ public class ResourceStats {
 
         private HumanResource resource;
 
+        private int participTasks;
+
+        private int participConclTasks;
+
+        private int nTasks;
+
         public GPanel(HumanResource resource) {
             this.resource = resource;
+            this.participTasks = 0;
+            this.participConclTasks = 0;
+            this.nTasks = 0;
         }
 
         private Slice[] getSlices() {
-            int nTasks = project.getTaskManager().getTasks().length;
+            nTasks = project.getTaskManager().getTasks().length;
             ResourceAssignment[] assignments = resource.getAssignments().clone();
-            int participTasks = 0;
-            int participConclTasks = 0;
             for(ResourceAssignment ra: assignments) {
                 if(ra.getTask().getCompletionPercentage() == 100)
                     participConclTasks++;
@@ -112,9 +120,10 @@ public class ResourceStats {
             g.setColor(Color.GREEN);
             g.fillRect(x - 12, y + 27, 10,10);
             g.setColor(Color.BLACK);
-            g.drawString("Tarefas n\u00E3o participadas", x ,y);
-            g.drawString("Tarefas participadas e n\u00E3o conclu\u00EDdas",x,y + 20);
-            g.drawString("Tarefas participadas e conclu\u00EDdas",x, y + 40);
+            DecimalFormat df = new DecimalFormat("###.#");
+            g.drawString("Tarefas n\u00E3o participadas " + df.format(100.0 * (nTasks - participConclTasks - participTasks) / nTasks) + "%", x ,y);
+            g.drawString("Tarefas participadas e n\u00E3o conclu\u00EDdas " + df.format(100.0 * participTasks / nTasks) + "%",x,y + 20);
+            g.drawString("Tarefas participadas e conclu\u00EDdas " + df.format(100.0 * participConclTasks/ nTasks) + "%",x, y + 40);
 
 
             double total = 0.0D;
