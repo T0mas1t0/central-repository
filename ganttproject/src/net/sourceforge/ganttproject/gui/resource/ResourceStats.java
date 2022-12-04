@@ -69,6 +69,7 @@ public class ResourceStats {
     class GPanel extends JPanel {
 
         private HumanResource resource;
+
         public GPanel(HumanResource resource) {
             this.resource = resource;
         }
@@ -100,6 +101,22 @@ public class ResourceStats {
         }
 
         void drawPie(Graphics2D g, Rectangle area, Slice[] slices) {
+            g.setColor(frame.getBackground());
+            g.fillRect(0,0, frame.getWidth(), frame.getHeight());
+            int x = frame.getWidth()/10;
+            int y = frame.getHeight()/3;
+            g.setColor(Color.RED);
+            g.fillRect(x - 12, y - 13, 10,10);
+            g.setColor(Color.ORANGE);
+            g.fillRect(x - 12, y + 5, 10,10);
+            g.setColor(Color.GREEN);
+            g.fillRect(x - 12, y + 27, 10,10);
+            g.setColor(Color.BLACK);
+            g.drawString("Tarefas n\u00E3o participadas", x ,y);
+            g.drawString("Tarefas participadas e n\u00E3o conclu\u00EDdas",x,y + 20);
+            g.drawString("Tarefas participadas e conclu\u00EDdas",x, y + 40);
+
+
             double total = 0.0D;
             for (Slice slice : slices) {
                 total += slice.value;
@@ -115,44 +132,9 @@ public class ResourceStats {
                 curValue += slice.value;
             }
         }
+
+
     }
-    /*class PieChart3 extends JComponent {
-        class Slice {
-            double value;
-            Color color;
-
-            public Slice(double value, Color color) {
-                this.value = value;
-                this.color = color;
-            }
-        }
-        Slice[] slices = { new Slice(5, Color.black),
-                new Slice(33, Color.green),
-                new Slice(20, Color.yellow), new Slice(15, Color.red) };
-        PieChart3() {
-        }
-        public void paint(Graphics g) {
-            System.out.println("paint");
-            drawPie((Graphics2D) g, getBounds(), slices);
-        }
-
-        void drawPie(Graphics2D g, Rectangle area, Slice[] slices) {
-            double total = 0.0D;
-            for (Slice slice : slices) {
-                total += slice.value;
-            }
-            double curValue = 0.0D;
-            int startAngle = 0;
-            for (Slice slice : slices) {
-                startAngle = (int) (curValue * 360 / total);
-                int arcAngle = (int) (slice.value * 360 / total);
-                g.setColor(slice.color);
-                g.fillArc(area.x, area.y, area.width, area.height,
-                        startAngle, arcAngle);
-                curValue += slice.value;
-            }
-        }
-    }*/
 
     private void initInfoPanel() {
         HumanResource[] resources = project.getHumanResourceManager().getResourcesArray().clone();
@@ -216,11 +198,18 @@ public class ResourceStats {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int row = table.rowAtPoint(evt.getPoint());
                 int col = table.columnAtPoint(evt.getPoint());
+                for (GPanel gp : infoPanel)
+                    gp.setVisible(false);
                 if (row >= 0 && col == 0) {
                     currentPanel = row;
-                    for(GPanel gp: infoPanel)
-                        gp.setVisible(false);
+
                     infoPanel[currentPanel].setVisible(true);
+                }
+                tableSP.setBounds(0, 0, frame.getWidth() / 10, frame.getHeight() - 45);
+                tableSP.setBorder(br);
+                if(infoPanel.length > 0) {
+                    infoPanel[currentPanel].setBounds(frame.getWidth() / 10, 0, frame.getWidth() - frame.getWidth() / 10, frame.getHeight());
+                    infoPanel[currentPanel].setBorder(br);
                 }
             }
         });
@@ -237,8 +226,10 @@ public class ResourceStats {
                 public void componentResized(ComponentEvent componentEvent) {
                     tableSP.setBounds(0, 0, frame.getWidth() / 10, frame.getHeight() - 45);
                     tableSP.setBorder(br);
-                    infoPanel[currentPanel].setBounds(frame.getWidth() / 10, 0, frame.getWidth() - frame.getWidth() / 10, frame.getHeight());
-                    infoPanel[currentPanel].setBorder(br);
+                    if(infoPanel.length > 0) {
+                        infoPanel[currentPanel].setBounds(frame.getWidth() / 10, 0, frame.getWidth() - frame.getWidth() / 10, frame.getHeight());
+                        infoPanel[currentPanel].setBorder(br);
+                    }
                 }
             });
 

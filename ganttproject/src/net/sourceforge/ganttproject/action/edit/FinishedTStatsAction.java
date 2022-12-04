@@ -23,19 +23,15 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.resource.ResourceStats;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.undo.GPUndoListener;
 
 import javax.swing.event.UndoableEditEvent;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
     private final IGanttProject myProject;
     private final UIFacade myUiFacade;
-    private final List<ResourceAssignment> resourceAssignments = new ArrayList<>();
 
     public FinishedTStatsAction(IGanttProject project, UIFacade uifacade, IconSize size) {
         super("stats", size);
