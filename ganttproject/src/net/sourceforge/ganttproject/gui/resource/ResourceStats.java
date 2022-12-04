@@ -85,6 +85,8 @@ public class ResourceStats {
         }
 
         private Slice[] getSlices() {
+            participTasks = 0;
+            participConclTasks = 0;
             nTasks = project.getTaskManager().getTasks().length;
             ResourceAssignment[] assignments = resource.getAssignments().clone();
             for(ResourceAssignment ra: assignments) {
