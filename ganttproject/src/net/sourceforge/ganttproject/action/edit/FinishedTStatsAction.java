@@ -23,14 +23,13 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.resource.ResourceStats;
-import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.undo.GPUndoListener;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.undo.GPUndoListener;
 
 import javax.swing.event.UndoableEditEvent;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import  java.util.List;
+import java.util.List;
 
 public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
@@ -46,18 +45,8 @@ public class FinishedTStatsAction extends GPAction implements GPUndoListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<HumanResource> resources = myProject.getHumanResourceManager().getResources();
-        for (HumanResource r: resources) {
-            for (ResourceAssignment a: r.getAssignments()) {
-                System.out.println(a.getTask().getName());
-            }
-        }
-        ResourceStats resourceStats = new ResourceStats(myProject, myUiFacade);
+        ResourceStats resourceStats = new ResourceStats(myProject);
         resourceStats.show();
-
-
-        System.out.println(myProject.getHumanResourceManager().getResources());
-
     }
 
     @Override

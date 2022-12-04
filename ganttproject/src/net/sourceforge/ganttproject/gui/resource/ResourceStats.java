@@ -18,136 +18,236 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.gui.resource;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-
-import net.sourceforge.ganttproject.GPVersion;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.gui.AbstractPagesDialog;
-import net.sourceforge.ganttproject.gui.NotificationManager;
-import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.gui.options.TopPanel;
-import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
+import net.sourceforge.ganttproject.task.ResourceAssignment;
 
-public class ResourceStats extends AbstractPagesDialog {
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
-    private static final Color HTML_BACKGROUND = new JPanel().getBackground();
+public class ResourceStats {
 
-    private final IGanttProject myProject;
+    private JFrame frame;
 
-    public ResourceStats(IGanttProject project, UIFacade uiFacade) {
-        List<ListItem> result = new ArrayList<AbstractPagesDialog.ListItem>();
-        myProject = project;
-        List<HumanResource> resources = myProject.getHumanResourceManager().getResources();
-        for(HumanResource hr: resources)
-            result.add(createHtmlPage(hr.getName()));
+    private GPanel[] infoPanel;
 
-        super("resourcesStats", uiFacade, result);
+    private int currentPanel;
 
+    private JTable table;
+
+    private JScrollPane tableSP;
+
+    private Border br;
+
+    private Container container;
+
+    private IGanttProject project;
+
+    public ResourceStats(IGanttProject project) {
+        this.project = project;
+        initFrameWithContainer();
+        initResourceTable();
+        initScrollPane();
+        initInfoPanel();
     }
 
-    private List<ListItem> createPages() {
+    class Slice {
+        double value;
+        Color color;
 
-
-        return result;
-    }
-
-    private static ListItem createSummaryPage() {
-        JPanel result = new JPanel(new BorderLayout());
-        Box htmlBox = Box.createVerticalBox();
-        {
-            JEditorPane html = createHtml(GanttLanguage.getInstance().formatText("about.summary", GPVersion.CURRENT));
-            html.setAlignmentX(0.5f);
-            htmlBox.add(html);
-            htmlBox.add(Box.createVerticalStrut(20));
+        public Slice(double value, Color color) {
+            this.value = value;
+            this.color = color;
         }
-        {
-            JEditorPane html = createHtml(GanttLanguage.getInstance().formatText("about.authors.short", "http://ganttproject.biz/about"));
-            html.setAlignmentX(0.5f);
-            htmlBox.add(html);
-            htmlBox.add(Box.createVerticalStrut(20));
-        }
-        result.add(htmlBox, BorderLayout.NORTH);
-
-        JLabel icon = new JLabel(new ImageIcon(ResourceStats.class.getResource("/icons/ganttproject.png")));
-        icon.setAlignmentX(0.5f);
-        JPanel iconWrapper = new JPanel(new BorderLayout());
-        iconWrapper.add(icon, BorderLayout.NORTH);
-        result.add(iconWrapper, BorderLayout.CENTER);
-
-        result.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
-        return new ListItem(false, "summary", i18n("summary"), result);
     }
 
-    private static ListItem createTranslationsPage() {
-        StringBuilder builder = new StringBuilder();
-        for (Locale l : GanttLanguage.getInstance().getAvailableLocales()) {
-            String language = GanttLanguage.getInstance().formatLanguageAndCountry(l);
-            String translatorsKey = "about.translations."
-                    + (Strings.isNullOrEmpty(l.getCountry()) ? l.getLanguage() : l.getLanguage() + "_" + l.getCountry());
-            String translators = GanttLanguage.getInstance().getText(translatorsKey);
-            if (translators == null) {
-                continue;
+    class GPanel extends JPanel {
+
+        private HumanResource resource;
+        public GPanel(HumanResource resource) {
+            this.resource = resource;
+        }
+
+        private Slice[] getSlices() {
+            int nTasks = project.getTaskManager().getTasks().length;
+            ResourceAssignment[] assignments = resource.getAssignments().clone();
+            int participTasks = 0;
+            int participConclTasks = 0;
+            for(ResourceAssignment ra: assignments) {
+                if(ra.getTask().getCompletionPercentage() == 100)
+                    participConclTasks++;
+                else
+                    participTasks++;
             }
-            builder.append(GanttLanguage.getInstance().formatText("about.translations.entry", language, translators));
+
+            Slice[] slices = new Slice[3];
+            slices[0] = new Slice(participConclTasks, Color.GREEN);
+            slices[1] = new Slice(participTasks, Color.ORANGE);
+            slices[2] = new Slice(nTasks - participConclTasks - participTasks, Color.RED);
+            return slices;
         }
-        return createHtmlPage("translations", i18n("translations"), GanttLanguage.getInstance().formatText("about.translations", builder.toString()));
+
+        @Override
+        public void paintComponent(Graphics g) {
+            drawPie((Graphics2D) g,
+                    new Rectangle(frame.getWidth() / 3, 0, frame.getWidth() - frame.getWidth() / 2, frame.getHeight() - 45),
+                    getSlices());
+        }
+
+        void drawPie(Graphics2D g, Rectangle area, Slice[] slices) {
+            double total = 0.0D;
+            for (Slice slice : slices) {
+                total += slice.value;
+            }
+            double curValue = 0.0D;
+            int startAngle = 0;
+            for (Slice slice : slices) {
+                startAngle = (int) (curValue * 360 / total);
+                int arcAngle = (int) (slice.value * 360 / total);
+                g.setColor(slice.color);
+                g.fillArc(area.x, area.y, area.width, area.height,
+                        startAngle, arcAngle);
+                curValue += slice.value;
+            }
+        }
+    }
+    /*class PieChart3 extends JComponent {
+        class Slice {
+            double value;
+            Color color;
+
+            public Slice(double value, Color color) {
+                this.value = value;
+                this.color = color;
+            }
+        }
+        Slice[] slices = { new Slice(5, Color.black),
+                new Slice(33, Color.green),
+                new Slice(20, Color.yellow), new Slice(15, Color.red) };
+        PieChart3() {
+        }
+        public void paint(Graphics g) {
+            System.out.println("paint");
+            drawPie((Graphics2D) g, getBounds(), slices);
+        }
+
+        void drawPie(Graphics2D g, Rectangle area, Slice[] slices) {
+            double total = 0.0D;
+            for (Slice slice : slices) {
+                total += slice.value;
+            }
+            double curValue = 0.0D;
+            int startAngle = 0;
+            for (Slice slice : slices) {
+                startAngle = (int) (curValue * 360 / total);
+                int arcAngle = (int) (slice.value * 360 / total);
+                g.setColor(slice.color);
+                g.fillArc(area.x, area.y, area.width, area.height,
+                        startAngle, arcAngle);
+                curValue += slice.value;
+            }
+        }
+    }*/
+
+    private void initInfoPanel() {
+        HumanResource[] resources = project.getHumanResourceManager().getResourcesArray().clone();
+        infoPanel = new GPanel[resources.length];
+        for(int i = 0; i < infoPanel.length; i++) {
+            infoPanel[i] = new GPanel(resources[i]);
+            infoPanel[i].setBounds(frame.getWidth() / 10, 0, frame.getWidth() - frame.getWidth() / 10, frame.getHeight() - 45);
+            infoPanel[i].setBorder(br);
+            container.add(infoPanel[i]);
+            infoPanel[i].setVisible(false);
+        }
     }
 
-    private static ListItem createHtmlPage(String key) {
-        return createHtmlPage(key, i18n(key), i18n("about." + key));
+    private void initScrollPane() {
+        tableSP = new JScrollPane(table);
+        tableSP.setBounds(0, 0, frame.getWidth() / 10, frame.getHeight());
+        tableSP.setBorder(br);
+        tableSP.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(50, 155, 148);
+            }
+        });
+        container.add(tableSP);
     }
 
-    private static ListItem createHtmlPage(String key, String title, String body) {
-        JPanel result = new JPanel(new BorderLayout());
-        JComponent topPanel = TopPanel.create(title, null);
-        topPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        result.add(topPanel, BorderLayout.NORTH);
+    private void initResourceTable() {
+        HumanResource[] resources = project.getHumanResourceManager().getResourcesArray().clone();
+        String[][] data = new String[resources.length][1];
+        for (int i = 0; i < resources.length; i++) {
+            data[i][0] = resources[i].getId() + ": " + resources[i].getName();
+        }
 
-        JPanel planePageWrapper = new JPanel(new BorderLayout());
-        planePageWrapper.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        JComponent planePage = createHtml(body);
-        planePage.setAlignmentX(Component.LEFT_ALIGNMENT);
-        planePageWrapper.add(planePage, BorderLayout.NORTH);
-        result.add(planePageWrapper, BorderLayout.CENTER);
+        table = new JTable(data, new String[]{"Resources"}) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
 
-        return new ListItem(false, key, title, result);
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component returnComp = super.prepareRenderer(renderer, row, column);
+                Color alternateColor = new Color(0.807f, 0.807f, 0.807f);
+                Color whiteColor = Color.WHITE;
+                if (!returnComp.getBackground().equals(getSelectionBackground())) {
+                    Color bg = (row % 2 != 0 ? alternateColor : whiteColor);
+                    returnComp.setBackground(bg);
+                    bg = null;
+                }
+                return returnComp;
+            }
+        };
+        table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.getTableHeader().setOpaque(false);
+        table.getTableHeader().setBackground(new Color(50, 155, 148));
+        table.getTableHeader().setFont(new Font("Dialog", Font.PLAIN, 14));
+        table.setFont(new Font("Dialog", Font.PLAIN, 12));
+        table.setRowHeight(25);
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = table.rowAtPoint(evt.getPoint());
+                int col = table.columnAtPoint(evt.getPoint());
+                if (row >= 0 && col == 0) {
+                    currentPanel = row;
+                    for(GPanel gp: infoPanel)
+                        gp.setVisible(false);
+                    infoPanel[currentPanel].setVisible(true);
+                }
+            }
+        });
     }
 
-    private static JEditorPane createHtml(String html) {
-        JEditorPane htmlPane = new JEditorPane("text/html", html);
-        htmlPane.setEditable(false);
-        htmlPane.setBackground(HTML_BACKGROUND);
-        htmlPane.addHyperlinkListener(NotificationManager.DEFAULT_HYPERLINK_LISTENER);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        htmlPane.setSize(new Dimension(screenSize.width / 3, Integer.MAX_VALUE));
-        return htmlPane;
-    }
+        private void initFrameWithContainer() {
+            frame = new JFrame();
+            frame.setLayout(null);
+            frame.setSize(1500, 750);
+            frame.setTitle("Estat\u00EDsticas dos Recursos");
+            frame.setIconImage(new ImageIcon(getClass().getResource("/icons/stats_16.png")).getImage());
+            frame.setLocationRelativeTo(null);
+            frame.addComponentListener(new ComponentAdapter() {
+                public void componentResized(ComponentEvent componentEvent) {
+                    tableSP.setBounds(0, 0, frame.getWidth() / 10, frame.getHeight() - 45);
+                    tableSP.setBorder(br);
+                    infoPanel[currentPanel].setBounds(frame.getWidth() / 10, 0, frame.getWidth() - frame.getWidth() / 10, frame.getHeight());
+                    infoPanel[currentPanel].setBorder(br);
+                }
+            });
 
-    private static String i18n(String key) {
-        return GanttLanguage.getInstance().getText(key);
-    }
+            br = BorderFactory.createLineBorder(Color.black);
+            container = frame.getContentPane();
+        }
 
-    @Override
-    protected void onOk() {
+        public void show() {
+            frame.setVisible(true);
+        }
+
     }
-}

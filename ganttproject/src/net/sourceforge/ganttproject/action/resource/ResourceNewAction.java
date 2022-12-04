@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
  * Action connected to the menu item for insert a new resource
  */
 public class ResourceNewAction extends ResourceAction {
+
   private final UIFacade myUIFacade;
 
   private final RoleManager myRoleManager;
